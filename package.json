@@ -7,10 +7,15 @@
     "build": "tsc -p api/tsconfig.json && tsc -p web/tsconfig.json"
   },
   "dependencies": {
+    "@types/vfile-message": "2.0.0",
+    "@vercel/node": "1.12.1",
     "chrome-aws-lambda": "7.0.0",
     "marked": "2.0.0",
     "puppeteer-core": "7.0.0",
-    "twemoji": "13.0.1"
+    "ts-node": "10.2.1",
+    "twemoji": "13.0.1",
+    "vercel": "21.0.1",
+    "vfile-message": "3.0.2"
   },
   "devDependencies": {
     "@types/marked": "1.2.2",

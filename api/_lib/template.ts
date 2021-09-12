@@ -1,47 +1,36 @@
-
-import { readFileSync } from 'fs';
-import marked from 'marked';
-import { sanitizeHtml } from './sanitizer';
-import { ParsedRequest } from './types';
-const twemoji = require('twemoji');
-const twOptions = { folder: 'svg', ext: '.svg' };
+import { readFileSync } from "fs";
+import marked from "marked";
+import { sanitizeHtml } from "./sanitizer";
+import { ParsedRequest } from "./types";
+const twemoji = require("twemoji");
+const twOptions = { folder: "svg", ext: ".svg" };
 const emojify = (text: string) => twemoji.parse(text, twOptions);
+import productionWizardData from "../data/nfts-prod.json";
+const wizData = productionWizardData as { [wizardId: string]: any };
 
-const rglr = readFileSync(`${__dirname}/../_fonts/Inter-Regular.woff2`).toString('base64');
-const bold = readFileSync(`${__dirname}/../_fonts/Inter-Bold.woff2`).toString('base64');
-const mono = readFileSync(`${__dirname}/../_fonts/Vera-Mono.woff2`).toString('base64');
+const rglr = readFileSync(`${__dirname}/../_fonts/Alagard.woff2`).toString(
+  "base64"
+);
 
-function getCss(theme: string, fontSize: string) {
-    let background = 'white';
-    let foreground = 'black';
-    let radial = 'lightgray';
+type WizardData = { name: string; image: string; background_color: string };
 
-    if (theme === 'dark') {
-        background = 'black';
-        foreground = 'white';
-        radial = 'dimgray';
-    }
-    return `
+function getCss(theme: string, fontSize: string, wizard?: WizardData) {
+  //   let background = "white";
+  //   let foreground = "black";
+  //   let radial = "lightgray";
+
+  //   if (theme === "dark") {
+  let background = `#${wizard?.background_color}` || "black";
+  let foreground = "white";
+  let radial = "#69696978";
+  //   }
+  return `
     @font-face {
-        font-family: 'Inter';
+        font-family: 'Alagard';
         font-style:  normal;
         font-weight: normal;
         src: url(data:font/woff2;charset=utf-8;base64,${rglr}) format('woff2');
     }
-
-    @font-face {
-        font-family: 'Inter';
-        font-style:  normal;
-        font-weight: bold;
-        src: url(data:font/woff2;charset=utf-8;base64,${bold}) format('woff2');
-    }
-
-    @font-face {
-        font-family: 'Vera';
-        font-style: normal;
-        font-weight: normal;
-        src: url(data:font/woff2;charset=utf-8;base64,${mono})  format("woff2");
-      }
 
     body {
         background: ${background};
@@ -65,7 +54,14 @@ function getCss(theme: string, fontSize: string) {
         content: '\`';
     }
 
+    .sides-layout {
+        display: flex;
+        flex-direction: row;
+        margin: 0 4em;
+    }
+
     .logo-wrapper {
+        flex: 1;
         display: flex;
         align-items: center;
         align-content: center;
@@ -74,7 +70,9 @@ function getCss(theme: string, fontSize: string) {
     }
 
     .logo {
-        margin: 0 75px;
+        height: auto;
+        width: 100%;
+        image-rendering: pixelated;
     }
 
     .plus {
@@ -95,35 +93,42 @@ function getCss(theme: string, fontSize: string) {
     }
     
     .heading {
-        font-family: 'Inter', sans-serif;
+        flex: 1;
+        font-family: 'Alagard', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
         font-style: normal;
         color: ${foreground};
-        line-height: 1.8;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
     }`;
 }
 
 export function getHtml(parsedReq: ParsedRequest) {
-    const { text, theme, md, fontSize, images, widths, heights } = parsedReq;
-    return `<!DOCTYPE html>
+  const { text, theme, md, fontSize, images, widths, heights, wizard } =
+    parsedReq;
+  console.log("wizard: ", wizard);
+
+  if (wizard) {
+    return getWizardHtml(parsedReq);
+  }
+
+  // TODO
+  return `<!DOCTYPE html>
 <html>
     <meta charset="utf-8">
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        ${getCss(theme, fontSize)}
+        ${getCss("dark", fontSize)}
     </style>
     <body>
         <div>
-            <div class="spacer">
             <div class="logo-wrapper">
-                ${images.map((img, i) =>
-                    getPlusSign(i) + getImage(img, widths[i], heights[i])
-                ).join('')}
+                ${getImage(images[0], widths[0], heights[0])}
             </div>
-            <div class="spacer">
             <div class="heading">${emojify(
-                md ? marked(text) : sanitizeHtml(text)
+              md ? marked(text) : sanitizeHtml(text)
             )}
             </div>
         </div>
@@ -131,16 +136,42 @@ export function getHtml(parsedReq: ParsedRequest) {
 </html>`;
 }
 
-function getImage(src: string, width ='auto', height = '225') {
-    return `<img
+export function getWizardHtml(parsedReq: ParsedRequest) {
+  const { text, theme, md, fontSize, images, widths, heights, wizard } =
+    parsedReq;
+
+  const wizardData: any = wizData[wizard.toString()];
+  let image = `https://nftz.forgottenrunes.com/wizards/alt/400-nobg/wizard-${wizard}.png`;
+  let wizardText = `${wizardData.name} (#${wizard})`;
+
+  return `<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <title>Generated Image</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        ${getCss(theme, fontSize, wizardData)}
+    </style>
+    <body>
+        <div class="sides-layout">
+            <div class="logo-wrapper">
+                ${getImage(image, "auto", "auto")}
+            </div>
+            <div class="heading">${emojify(
+              md ? marked(wizardText) : sanitizeHtml(wizardText)
+            )}
+            </div>
+        </div>
+    </body>
+</html>`;
+}
+
+function getImage(src: string, width = "auto", height = "225") {
+  return `<img
         class="logo"
         alt="Generated Image"
         src="${sanitizeHtml(src)}"
         width="${sanitizeHtml(width)}"
         height="${sanitizeHtml(height)}"
-    />`
-}
-
-function getPlusSign(i: number) {
-    return i === 0 ? '' : '<div class="plus">+</div>';
+    />`;
 }
