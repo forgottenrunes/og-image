@@ -8,7 +8,7 @@ const emojify = (text: string) => twemoji.parse(text, twOptions);
 import productionWizardData from "../data/nfts-prod.json";
 const wizData = productionWizardData as { [wizardId: string]: any };
 
-const rglr = readFileSync(`${__dirname}/../_fonts/alagard.otf`).toString(
+const rglr = readFileSync(`${__dirname}/../_fonts/alagard.woff2`).toString(
   "base64"
 );
 
@@ -26,10 +26,10 @@ function getCss(theme: string, fontSize: string, wizard?: WizardData) {
   //   }
   return `
     @font-face {
-        font-family: 'Alagard';
+        font-family: 'MyAlagard';
         font-style:  normal;
         font-weight: normal;
-        src: url(data:font/otf;charset=utf-8;base64,${rglr}) format('otf');
+        src: url(data:font/woff2;charset=utf-8;base64,${rglr}) format('woff2');
     }
 
     body {
@@ -95,7 +95,7 @@ function getCss(theme: string, fontSize: string, wizard?: WizardData) {
     
     .heading {
         flex: 1;
-        font-family: 'Alagard', sans-serif;
+        font-family: 'MyAlagard', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
         font-style: normal;
         color: ${foreground};
