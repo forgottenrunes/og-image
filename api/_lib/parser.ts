@@ -32,7 +32,7 @@ export function parseRequest(req: IncomingMessage) {
   const parsedRequest: ParsedRequest = {
     fileType: extension === "jpeg" ? extension : "png",
     text: decodeURIComponent(text),
-    theme: theme === "dark" ? "dark" : "light",
+    theme: theme === "light" ? "light" : "dark",
     md: md === "1" || md === "true",
     fontSize: fontSize || "68px",
     images: getArray(images),
@@ -60,8 +60,8 @@ function getArray(stringOrArray: string[] | string | undefined): string[] {
 function getDefaultImages(images: string[], theme: Theme): string[] {
   const defaultImage =
     theme === "light"
-      ? "https://assets.vercel.com/image/upload/front/assets/design/vercel-triangle-black.svg"
-      : "https://assets.vercel.com/image/upload/front/assets/design/vercel-triangle-white.svg";
+      ? "https://www.forgottenrunes.com/static/img/favicon512.png"
+      : "https://www.forgottenrunes.com/static/img/favicon512.png";
 
   if (!images || !images[0]) {
     return [defaultImage];

@@ -20,7 +20,7 @@ function getCss(theme: string, fontSize: string, wizard?: WizardData) {
   //   let radial = "lightgray";
 
   //   if (theme === "dark") {
-  let background = `#${wizard?.background_color}` || "black";
+  let background = wizard ? `#${wizard?.background_color}` : "black";
   let foreground = "white";
   let radial = "#69696978";
   //   }
@@ -58,6 +58,7 @@ function getCss(theme: string, fontSize: string, wizard?: WizardData) {
         display: flex;
         flex-direction: row;
         margin: 0 4em;
+        width: 100%;
     }
 
     .logo-wrapper {
@@ -101,6 +102,9 @@ function getCss(theme: string, fontSize: string, wizard?: WizardData) {
         line-height: 1.2;
         display: flex;
         align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding-left: 0.5em;
     }`;
 }
 
@@ -123,7 +127,7 @@ export function getHtml(parsedReq: ParsedRequest) {
         ${getCss("dark", fontSize)}
     </style>
     <body>
-        <div>
+        <div class="sides-layout">
             <div class="logo-wrapper">
                 ${getImage(images[0], widths[0], heights[0])}
             </div>
