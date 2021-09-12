@@ -8,7 +8,7 @@ const emojify = (text: string) => twemoji.parse(text, twOptions);
 import productionWizardData from "../data/nfts-prod.json";
 const wizData = productionWizardData as { [wizardId: string]: any };
 
-const rglr = readFileSync(`${__dirname}/../_fonts/Alagard.woff2`).toString(
+const rglr = readFileSync(`${__dirname}/../_fonts/alagard.woff2`).toString(
   "base64"
 );
 
