@@ -108,10 +108,32 @@ function getCss(theme: string, fontSize: string, wizard?: WizardData) {
     }`;
 }
 
+function linearmap(
+  value: number,
+  istart: number,
+  istop: number,
+  ostart: number,
+  ostop: number
+) {
+  return ostart + (ostop - ostart) * ((value - istart) / (istop - istart));
+}
+
+const getFontSizeForTitleText = (text, fontSize) => {
+  if (fontSize) return fontSize;
+  let minSize = 69;
+  let maxSize = 260;
+  let size =
+    maxSize -
+    Math.floor(linearmap(Math.min(text.length, 99), 10, 100, minSize, maxSize));
+  size = Math.max(size, minSize);
+  return size + "px";
+};
+
 export function getHtml(parsedReq: ParsedRequest) {
   const { text, theme, md, fontSize, images, widths, heights, wizard } =
     parsedReq;
   console.log("wizard: ", wizard);
+  const fontSizeToUse = getFontSizeForTitleText(text, fontSize);
 
   if (wizard) {
     return getWizardHtml(parsedReq);
@@ -124,7 +146,7 @@ export function getHtml(parsedReq: ParsedRequest) {
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        ${getCss("dark", fontSize)}
+        ${getCss("dark", fontSizeToUse)}
     </style>
     <body>
         <div class="sides-layout">
@@ -148,13 +170,15 @@ export function getWizardHtml(parsedReq: ParsedRequest) {
   let image = `https://nftz.forgottenrunes.com/wizards/alt/400-nobg/wizard-${wizard}.png`;
   let wizardText = `${wizardData.name} (#${wizard})`;
 
+  const fontSizeToUse = getFontSizeForTitleText(wizardText, fontSize);
+
   return `<!DOCTYPE html>
 <html>
     <meta charset="utf-8">
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        ${getCss(theme, fontSize, wizardData)}
+        ${getCss(theme, fontSizeToUse, wizardData)}
     </style>
     <body>
         <div class="sides-layout">

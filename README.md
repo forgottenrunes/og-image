@@ -68,3 +68,14 @@ Once you have an image generator that sparks joy, you can setup [automatic GitHu
 
 - Steven ([@styfle](https://twitter.com/styfle)) - [Vercel](https://vercel.com)
 - Evil Rabbit ([@evilrabbit](https://twitter.com/evilrabbit_)) - [Vercel](https://vercel.com)
+
+## Dev:
+
+```
+OG_HTML_DEBUG=1 vercel dev
+```
+
+Visit:
+http://localhost:3000/**Hello**%20World.png?md=1
+
+Set your browser to responsive: 2048x1170
