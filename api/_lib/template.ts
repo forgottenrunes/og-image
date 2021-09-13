@@ -14,16 +14,25 @@ const rglr = readFileSync(`${__dirname}/../_fonts/alagard.woff2`).toString(
 
 type WizardData = { name: string; image: string; background_color: string };
 
-function getCss(theme: string, fontSize: string, wizard?: WizardData) {
-  //   let background = "white";
-  //   let foreground = "black";
-  //   let radial = "lightgray";
-
-  //   if (theme === "dark") {
-  let background = wizard ? `#${wizard?.background_color}` : "black";
+function getCss({
+  theme,
+  fontSize,
+  wizard,
+  bgColor
+}: {
+  theme: string;
+  fontSize: string;
+  wizard?: WizardData;
+  bgColor?: string;
+}) {
+  let background = bgColor
+    ? bgColor
+    : wizard
+    ? `#${wizard?.background_color}`
+    : "black";
   let foreground = "white";
   let radial = "#69696978";
-  //   }
+
   return `
     @font-face {
         font-family: 'MyAlagard';
@@ -130,14 +139,28 @@ const getFontSizeForTitleText = (text, fontSize) => {
 };
 
 export function getHtml(parsedReq: ParsedRequest) {
-  const { text, theme, md, fontSize, images, widths, heights, wizard } =
-    parsedReq;
-  console.log("wizard: ", wizard);
+  const {
+    text,
+    theme,
+    md,
+    fontSize,
+    images,
+    widths,
+    heights,
+    wizard,
+    wizardImage,
+    bgColor
+  } = parsedReq;
+
   const fontSizeToUse = getFontSizeForTitleText(text, fontSize);
 
   if (wizard) {
     return getWizardHtml(parsedReq);
   }
+
+  const image = wizardImage
+    ? `https://nftz.forgottenrunes.com/wizards/alt/400-nobg/wizard-${wizardImage}.png`
+    : images[0];
 
   // TODO
   return `<!DOCTYPE html>
@@ -146,12 +169,12 @@ export function getHtml(parsedReq: ParsedRequest) {
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        ${getCss("dark", fontSizeToUse)}
+        ${getCss({ theme: "dark", fontSize: fontSizeToUse, bgColor })}
     </style>
     <body>
         <div class="sides-layout">
             <div class="logo-wrapper">
-                ${getImage(images[0], widths[0], heights[0])}
+                ${getImage(image, "auto", "auto")}
             </div>
             <div class="heading">${emojify(
               md ? marked(text) : sanitizeHtml(text)
@@ -163,8 +186,17 @@ export function getHtml(parsedReq: ParsedRequest) {
 }
 
 export function getWizardHtml(parsedReq: ParsedRequest) {
-  const { text, theme, md, fontSize, images, widths, heights, wizard } =
-    parsedReq;
+  const {
+    text,
+    theme,
+    md,
+    fontSize,
+    images,
+    widths,
+    heights,
+    wizard,
+    bgColor
+  } = parsedReq;
 
   const wizardData: any = wizData[wizard.toString()];
   let image = `https://nftz.forgottenrunes.com/wizards/alt/400-nobg/wizard-${wizard}.png`;
@@ -178,7 +210,7 @@ export function getWizardHtml(parsedReq: ParsedRequest) {
     <title>Generated Image</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        ${getCss(theme, fontSizeToUse, wizardData)}
+        ${getCss({ theme: theme, fontSize: fontSizeToUse, wizard: wizardData })}
     </style>
     <body>
         <div class="sides-layout">

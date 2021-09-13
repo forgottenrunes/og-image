@@ -5,7 +5,17 @@ import { ParsedRequest, Theme } from "./types";
 export function parseRequest(req: IncomingMessage) {
   console.log("HTTP " + req.url);
   const { pathname, query } = parse(req.url || "/", true);
-  const { fontSize, images, widths, heights, theme, md, wizard } = query || {};
+  const {
+    fontSize,
+    images,
+    widths,
+    heights,
+    theme,
+    md,
+    wizard,
+    wizardImage,
+    bgColor
+  } = query || {};
 
   if (Array.isArray(fontSize)) {
     throw new Error("Expected a single fontSize");
@@ -15,6 +25,12 @@ export function parseRequest(req: IncomingMessage) {
   }
   if (Array.isArray(wizard)) {
     throw new Error("Expected a single wizard");
+  }
+  if (Array.isArray(wizardImage)) {
+    throw new Error("Expected a single wizardImage");
+  }
+  if (Array.isArray(bgColor)) {
+    throw new Error("Expected a single bgColor");
   }
 
   const arr = (pathname || "/").slice(1).split(".");
@@ -35,10 +51,12 @@ export function parseRequest(req: IncomingMessage) {
     theme: theme === "light" ? "light" : "dark",
     md: md === "1" || md === "true",
     fontSize: fontSize,
+    bgColor: bgColor,
     images: getArray(images),
     widths: getArray(widths),
     heights: getArray(heights),
-    wizard: wizard
+    wizard: wizard,
+    wizardImage: wizardImage
   };
   parsedRequest.images = getDefaultImages(
     parsedRequest.images,

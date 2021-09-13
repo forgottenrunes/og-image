@@ -11,4 +11,6 @@ export interface ParsedRequest {
   widths: string[];
   heights: string[];
   wizard?: string;
+  wizardImage?: string;
+  bgColor?: string;
 }
