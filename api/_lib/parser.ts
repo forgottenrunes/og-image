@@ -58,6 +58,13 @@ export function parseRequest(req: IncomingMessage) {
     wizard: wizard,
     wizardImage: wizardImage
   };
+
+  if (!parsedRequest.images || !parsedRequest.images[0]) {
+    const defaultImage =
+      "https://www.forgottenrunes.com/static/img/favicon512.png";
+    parsedRequest.images = [defaultImage];
+  }
+
   return parsedRequest;
 }
 

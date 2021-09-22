@@ -94,5 +94,16 @@ Set your browser to responsive: 2048x1170
 
 ## Example Images:
 
+Prod tests:
+
 - https://og.forgottenrunes.com/The%20Lore%20of%20Holy%20Arcanist%20Illuminus%20of%20the%20Heavens%20%230.png?wizard=0
+- https://og.forgottenrunes.com/Hello%20Everyone.png?wizardImage=1&bgColor=FF0099
+- https://og.forgottenrunes.com/The%20Book%20Of%20Lore?bgColor=000000&images=https://www.forgottenrunes.com/static/lore/book/closed_whole.png
+- https://og.forgottenrunes.com/Commissions%20for%20Wizard%20Art.png?
+
+Local tests:
+
+- http://localhost:3000/The%20Lore%20of%20Holy%20Arcanist%20Illuminus%20of%20the%20Heavens%20%230.png?wizard=0
 - http://localhost:3000/Hello%20Everyone.png?wizardImage=1&bgColor=FF0099
+- http://localhost:3000/The%20Book%20Of%20Lore?bgColor=000000&images=https://www.forgottenrunes.com/static/lore/book/closed_whole.png
+- http://localhost:3000/Commissions%20for%20Wizard%20Art.png?
