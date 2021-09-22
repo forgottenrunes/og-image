@@ -58,10 +58,6 @@ export function parseRequest(req: IncomingMessage) {
     wizard: wizard,
     wizardImage: wizardImage
   };
-  parsedRequest.images = getDefaultImages(
-    parsedRequest.images,
-    parsedRequest.theme
-  );
   return parsedRequest;
 }
 
@@ -73,22 +69,4 @@ function getArray(stringOrArray: string[] | string | undefined): string[] {
   } else {
     return [stringOrArray];
   }
-}
-
-function getDefaultImages(images: string[], theme: Theme): string[] {
-  const defaultImage =
-    theme === "light"
-      ? "https://www.forgottenrunes.com/static/img/favicon512.png"
-      : "https://www.forgottenrunes.com/static/img/favicon512.png";
-
-  if (!images || !images[0]) {
-    return [defaultImage];
-  }
-  if (
-    !images[0].startsWith("https://assets.vercel.com/") &&
-    !images[0].startsWith("https://assets.zeit.co/")
-  ) {
-    images[0] = defaultImage;
-  }
-  return images;
 }

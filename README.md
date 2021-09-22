@@ -79,3 +79,20 @@ Visit:
 http://localhost:3000/**Hello**%20World.png?md=1
 
 Set your browser to responsive: 2048x1170
+
+## Parameters:
+
+- fontSize
+- images
+- widths
+- heights
+- theme
+- md
+- wizard
+- wizardImage
+- bgColor
+
+## Example Images:
+
+- https://og.forgottenrunes.com/The%20Lore%20of%20Holy%20Arcanist%20Illuminus%20of%20the%20Heavens%20%230.png?wizard=0
+- http://localhost:3000/Hello%20Everyone.png?wizardImage=1&bgColor=FF0099

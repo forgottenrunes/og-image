@@ -26,7 +26,7 @@ function getCss({
   bgColor?: string;
 }) {
   let background = bgColor
-    ? bgColor
+    ? (bgColor[0] === "#" ? "" : "#") + bgColor
     : wizard
     ? `#${wizard?.background_color}`
     : "black";
