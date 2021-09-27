@@ -2,10 +2,10 @@ import {readFileSync} from "fs";
 import marked from "marked";
 import {sanitizeHtml} from "./sanitizer";
 import {ParsedRequest} from "./types";
-import productionWizardData from "../data/nfts-prod.json";
+import productionWizardData = require("../data/nfts-prod.json");
 import {createCanvas, loadImage} from "node-canvas";
-import convert from "color-convert";
-import {sortBy, toPairs} from "lodash";
+import sortBy from "lodash/sortBy";
+import toPairs from "lodash/toPairs"
 
 const twemoji = require("twemoji");
 const twOptions = { folder: "svg", ext: ".svg" };
@@ -146,6 +146,15 @@ const getFontSizeForTitleText = (text, fontSize) => {
   return size + "px";
 };
 
+function ColorToHex(color:number) {
+  var hexadecimal = color.toString(16);
+  return hexadecimal.length == 1 ? "0" + hexadecimal : hexadecimal;
+}
+
+function ConvertRGBtoHex(red:number, green:number, blue:number) {
+  return "#" + ColorToHex(red) + ColorToHex(green) + ColorToHex(blue);
+}
+
 function extractBgColor(imagePixels: any, width: number, height: number) {
   //
   const pixels = imagePixels;
@@ -158,7 +167,7 @@ function extractBgColor(imagePixels: any, width: number, height: number) {
     g = pixels[offset + 1];
     b = pixels[offset + 2];
     a = pixels[offset + 3];
-    const hexColor = convert.rgb.hex(r, g, b);
+    const hexColor = ConvertRGBtoHex(r, g, b);
     colorCounts[hexColor] = colorCounts[hexColor] || 0;
     colorCounts[hexColor] = colorCounts[hexColor] + 1;
   }
@@ -168,7 +177,7 @@ function extractBgColor(imagePixels: any, width: number, height: number) {
       ([key, v]) => v
   ).reverse();
   const mostFrequentColor = mostFrequentPair[0][0];
-  return "#" + mostFrequentColor;
+  return mostFrequentColor;
 }
 
 async function getBgColor(url:string):Promise<string> {
