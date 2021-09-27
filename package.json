@@ -9,11 +9,11 @@
   "dependencies": {
     "@types/vfile-message": "2.0.0",
     "@vercel/node": "1.12.1",
-    "chrome-aws-lambda": "7.0.0",
+    "chrome-aws-lambda": "10.1.0",
     "lodash": "4.17.21",
     "marked": "2.0.0",
     "node-canvas": "2.7.0",
-    "puppeteer-core": "7.0.0",
+    "puppeteer-core": "10.1.0",
     "ts-node": "10.2.1",
     "twemoji": "13.0.1",
     "vercel": "23.1.2",
