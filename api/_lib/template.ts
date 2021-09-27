@@ -1,11 +1,15 @@
-import { readFileSync } from "fs";
+import {readFileSync} from "fs";
 import marked from "marked";
-import { sanitizeHtml } from "./sanitizer";
-import { ParsedRequest } from "./types";
+import {sanitizeHtml} from "./sanitizer";
+import {ParsedRequest} from "./types";
+import productionWizardData from "../data/nfts-prod.json";
+import {createCanvas, loadImage} from "node-canvas";
+import convert from "color-convert";
+import {sortBy, toPairs} from "lodash";
+
 const twemoji = require("twemoji");
 const twOptions = { folder: "svg", ext: ".svg" };
 const emojify = (text: string) => twemoji.parse(text, twOptions);
-import productionWizardData from "../data/nfts-prod.json";
 const wizData = productionWizardData as { [wizardId: string]: any };
 
 const rglr = readFileSync(`${__dirname}/../_fonts/alagard.woff2`).toString(
@@ -43,13 +47,15 @@ function getCss({
 
     body {
         background: ${background};
-        background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
-        background-size: 100px 100px;
+        // background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
+        // background-size: 100px 100px;
         height: 100vh;
-        display: flex;
+        width:  100vw;
+        // display: flex;
         text-align: center;
-        align-items: center;
-        justify-content: center;
+        // align-items: center;
+        // justify-content: center;
+        margin: 0;
     }
 
     code {
@@ -66,12 +72,13 @@ function getCss({
     .sides-layout {
         display: flex;
         flex-direction: row;
-        margin: 0 4em;
+        // margin: 0 4em;
         width: 100%;
+        height: 100%;
     }
 
     .logo-wrapper {
-        flex: 1;
+        flex: 50%;
         display: flex;
         align-items: center;
         align-content: center;
@@ -80,8 +87,10 @@ function getCss({
     }
 
     .logo {
-        height: auto;
-        width: 100%;
+        height: 100%;
+        width: auto;
+        max-height: 100%;
+        max-width: 100%;
         image-rendering: pixelated;
     }
 
@@ -103,7 +112,7 @@ function getCss({
     }
     
     .heading {
-        flex: 1;
+        flex: 50%;
         font-family: 'MyAlagard', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
         font-style: normal;
@@ -112,8 +121,7 @@ function getCss({
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
-        padding-left: 0.5em;
+        padding-left: 0.25em;
     }`;
 }
 
@@ -138,7 +146,48 @@ const getFontSizeForTitleText = (text, fontSize) => {
   return size + "px";
 };
 
-export function getHtml(parsedReq: ParsedRequest) {
+function extractBgColor(imagePixels: any, width: number, height: number) {
+  //
+  const pixels = imagePixels;
+  const colorCounts: { [hex: string]: number } = {};
+
+  // just read the top row, could pull from more borders if you want
+  for (let i = 0, offset, r, g, b, a; i < width; i++) {
+    offset = i * 4;
+    r = pixels[offset + 0];
+    g = pixels[offset + 1];
+    b = pixels[offset + 2];
+    a = pixels[offset + 3];
+    const hexColor = convert.rgb.hex(r, g, b);
+    colorCounts[hexColor] = colorCounts[hexColor] || 0;
+    colorCounts[hexColor] = colorCounts[hexColor] + 1;
+  }
+
+  const mostFrequentPair = sortBy(
+      toPairs(colorCounts),
+      ([key, v]) => v
+  ).reverse();
+  const mostFrequentColor = mostFrequentPair[0][0];
+  return "#" + mostFrequentColor;
+}
+
+async function getBgColor(url:string):Promise<string> {
+  const imageData = await loadImage(url);
+  const canvas = createCanvas(imageData.width, imageData.height);
+  const context = canvas.getContext("2d");
+
+  context.drawImage(imageData, 0, 0, imageData.width, imageData.height);
+  const imagePixels = context.getImageData(0, 0, imageData.width, imageData.height);
+  return extractBgColor(
+      imagePixels.data,
+      imageData.width,
+      imageData.height
+  );
+
+}
+
+
+export async function getHtml(parsedReq: ParsedRequest) {
   const {
     text,
     theme,
@@ -173,7 +222,7 @@ export function getHtml(parsedReq: ParsedRequest) {
     </style>
     <body>
         <div class="sides-layout">
-            <div class="logo-wrapper">
+            <div class="logo-wrapper" style="background-color: ${images[0] ?  await getBgColor(images[0]) : "inherit"}">
                 ${getImage(image, "auto", "auto")}
             </div>
             <div class="heading">${emojify(
