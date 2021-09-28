@@ -1,11 +1,12 @@
-import { readFileSync } from "fs";
+import {readFileSync} from "fs";
 import marked from "marked";
-import { sanitizeHtml } from "./sanitizer";
-import { ParsedRequest } from "./types";
+import {sanitizeHtml} from "./sanitizer";
+import {ParsedRequest} from "./types";
+import productionWizardData = require("../data/nfts-prod.json");
+
 const twemoji = require("twemoji");
 const twOptions = { folder: "svg", ext: ".svg" };
 const emojify = (text: string) => twemoji.parse(text, twOptions);
-import productionWizardData from "../data/nfts-prod.json";
 const wizData = productionWizardData as { [wizardId: string]: any };
 
 const rglr = readFileSync(`${__dirname}/../_fonts/alagard.woff2`).toString(
@@ -25,13 +26,12 @@ function getCss({
   wizard?: WizardData;
   bgColor?: string;
 }) {
-  let background = bgColor
+  const background = bgColor
     ? (bgColor[0] === "#" ? "" : "#") + bgColor
     : wizard
     ? `#${wizard?.background_color}`
     : "black";
-  let foreground = "white";
-  let radial = "#69696978";
+  const foreground = getContrast(bgColor);
 
   return `
     @font-face {
@@ -43,13 +43,14 @@ function getCss({
 
     body {
         background: ${background};
-        background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
-        background-size: 100px 100px;
         height: 100vh;
+        width:  100vw;
         display: flex;
         text-align: center;
         align-items: center;
         justify-content: center;
+        margin: 0;
+        
     }
 
     code {
@@ -66,12 +67,13 @@ function getCss({
     .sides-layout {
         display: flex;
         flex-direction: row;
-        margin: 0 4em;
-        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        padding: 32px;
     }
 
     .logo-wrapper {
-        flex: 1;
+        flex: 50%;
         display: flex;
         align-items: center;
         align-content: center;
@@ -80,9 +82,10 @@ function getCss({
     }
 
     .logo {
-        height: auto;
+        height: 100%;
         width: 100%;
         image-rendering: pixelated;
+        object-fit: contain;
     }
 
     .plus {
@@ -103,7 +106,7 @@ function getCss({
     }
     
     .heading {
-        flex: 1;
+        flex: 50%;
         font-family: 'MyAlagard', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
         font-style: normal;
@@ -112,8 +115,7 @@ function getCss({
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 100%;
-        padding-left: 0.5em;
+        padding-left: 0.25em;
     }`;
 }
 
@@ -138,7 +140,45 @@ const getFontSizeForTitleText = (text, fontSize) => {
   return size + "px";
 };
 
-export function getHtml(parsedReq: ParsedRequest) {
+/*!
+ * Get the contrasting color for any hex color
+ * (c) 2021 Chris Ferdinandi, MIT License, https://gomakethings.com
+ * Derived from work by Brian Suda, https://24ways.org/2010/calculating-color-contrast/
+ * @param  {String} A hexcolor value
+ * @return {String} The contrasting color (black or white)
+ */
+export function getContrast(hexcolor: string) {
+  if (!hexcolor) return "white";
+
+  // If a leading # is provided, remove it
+  if (hexcolor.slice(0, 1) === "#") {
+    hexcolor = hexcolor.slice(1);
+  }
+
+  // If a three-character hexcode, make six-character
+  if (hexcolor.length === 3) {
+    hexcolor = hexcolor
+        .split("")
+        .map(function (hex) {
+          return hex + hex;
+        })
+        .join("");
+  }
+
+  // Convert to RGB value
+  let r = parseInt(hexcolor.substr(0, 2), 16);
+  let g = parseInt(hexcolor.substr(2, 2), 16);
+  let b = parseInt(hexcolor.substr(4, 2), 16);
+
+  // Get YIQ ratio
+  let yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+  // Check contrast
+  return yiq >= 128 ? "black" : "white";
+}
+
+
+export async function getHtml(parsedReq: ParsedRequest) {
   const {
     text,
     theme,
@@ -173,7 +213,7 @@ export function getHtml(parsedReq: ParsedRequest) {
     </style>
     <body>
         <div class="sides-layout">
-            <div class="logo-wrapper">
+            <div class="logo-wrapper" >
                 ${getImage(image, "auto", "auto")}
             </div>
             <div class="heading">${emojify(
