@@ -2,10 +2,8 @@ import {readFileSync} from "fs";
 import marked from "marked";
 import {sanitizeHtml} from "./sanitizer";
 import {ParsedRequest} from "./types";
-import productionWizardData = require("../data/nfts-prod.json");
 import {createCanvas, loadImage} from "node-canvas";
-import sortBy from "lodash/sortBy";
-import toPairs from "lodash/toPairs"
+import productionWizardData = require("../data/nfts-prod.json");
 
 const twemoji = require("twemoji");
 const twOptions = { folder: "svg", ext: ".svg" };
@@ -172,12 +170,10 @@ function extractBgColor(imagePixels: any, width: number, height: number) {
     colorCounts[hexColor] = colorCounts[hexColor] + 1;
   }
 
-  const mostFrequentPair = sortBy(
-      toPairs(colorCounts),
-      ([key, v]) => v
-  ).reverse();
-  const mostFrequentColor = mostFrequentPair[0][0];
-  return mostFrequentColor;
+  const pairs = Object.keys(colorCounts).map((hex:string) => [hex, colorCounts[hex]]);
+  pairs.sort(([key, v])=>-v)
+
+  return pairs[0][0] as string;
 }
 
 async function getBgColor(url:string):Promise<string> {
