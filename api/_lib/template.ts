@@ -49,11 +49,12 @@ function getCss({
         // background-size: 100px 100px;
         height: 100vh;
         width:  100vw;
-        // display: flex;
+        display: flex;
         text-align: center;
-        // align-items: center;
-        // justify-content: center;
+        align-items: center;
+        justify-content: center;
         margin: 0;
+        
     }
 
     code {
@@ -70,9 +71,9 @@ function getCss({
     .sides-layout {
         display: flex;
         flex-direction: row;
-        padding: 28px;
-        width: 100%;
-        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        padding: 32px;
     }
 
     .logo-wrapper {
