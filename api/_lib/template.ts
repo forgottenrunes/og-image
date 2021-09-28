@@ -2,7 +2,6 @@ import {readFileSync} from "fs";
 import marked from "marked";
 import {sanitizeHtml} from "./sanitizer";
 import {ParsedRequest} from "./types";
-// import {createCanvas, loadImage} from "node-canvas";
 import productionWizardData = require("../data/nfts-prod.json");
 
 const twemoji = require("twemoji");
@@ -27,13 +26,12 @@ function getCss({
   wizard?: WizardData;
   bgColor?: string;
 }) {
-  let background = bgColor
+  const background = bgColor
     ? (bgColor[0] === "#" ? "" : "#") + bgColor
     : wizard
     ? `#${wizard?.background_color}`
     : "black";
-  let foreground = getContrast(bgColor);
-  let radial = "#69696978";
+  const foreground = getContrast(bgColor);
 
   return `
     @font-face {
@@ -45,8 +43,6 @@ function getCss({
 
     body {
         background: ${background};
-        // background-image: radial-gradient(circle at 25px 25px, ${radial} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${radial} 2%, transparent 0%);
-        // background-size: 100px 100px;
         height: 100vh;
         width:  100vw;
         display: flex;
