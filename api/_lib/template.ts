@@ -32,7 +32,7 @@ function getCss({
     : wizard
     ? `#${wizard?.background_color}`
     : "black";
-  let foreground = "white";
+  let foreground = getContrast(bgColor);
   let radial = "#69696978";
 
   return `
@@ -82,14 +82,16 @@ function getCss({
         align-content: center;
         justify-content: center;
         justify-items: center;
+        padding-left: 0.2em;
     }
 
     .logo {
         height: 100%;
-        width: auto;
-        max-height: 100%;
-        max-width: 100%;
+        width: 100%;
+        // max-height: 100%;
+        // max-width: 100%;
         image-rendering: pixelated;
+        object-fit: contain;
     }
 
     .plus {
@@ -120,6 +122,7 @@ function getCss({
         align-items: center;
         justify-content: center;
         padding-left: 0.25em;
+        padding-right: 0.25em;
     }`;
 }
 
@@ -144,52 +147,42 @@ const getFontSizeForTitleText = (text, fontSize) => {
   return size + "px";
 };
 
-function ColorToHex(color:number) {
-  var hexadecimal = color.toString(16);
-  return hexadecimal.length == 1 ? "0" + hexadecimal : hexadecimal;
-}
+/*!
+ * Get the contrasting color for any hex color
+ * (c) 2021 Chris Ferdinandi, MIT License, https://gomakethings.com
+ * Derived from work by Brian Suda, https://24ways.org/2010/calculating-color-contrast/
+ * @param  {String} A hexcolor value
+ * @return {String} The contrasting color (black or white)
+ */
+export function getContrast(hexcolor: string) {
+  if (!hexcolor) return "white";
 
-function ConvertRGBtoHex(red:number, green:number, blue:number) {
-  return "#" + ColorToHex(red) + ColorToHex(green) + ColorToHex(blue);
-}
-
-function extractBgColor(imagePixels: any, width: number, height: number) {
-  //
-  const pixels = imagePixels;
-  const colorCounts: { [hex: string]: number } = {};
-
-  // just read the top row, could pull from more borders if you want
-  for (let i = 0, offset, r, g, b, a; i < width; i++) {
-    offset = i * 4;
-    r = pixels[offset + 0];
-    g = pixels[offset + 1];
-    b = pixels[offset + 2];
-    a = pixels[offset + 3];
-    const hexColor = ConvertRGBtoHex(r, g, b);
-    colorCounts[hexColor] = colorCounts[hexColor] || 0;
-    colorCounts[hexColor] = colorCounts[hexColor] + 1;
+  // If a leading # is provided, remove it
+  if (hexcolor.slice(0, 1) === "#") {
+    hexcolor = hexcolor.slice(1);
   }
 
-  const pairs = Object.keys(colorCounts).map((hex:string) => [hex, colorCounts[hex]]);
-  pairs.sort(([key, v])=>-v)
+  // If a three-character hexcode, make six-character
+  if (hexcolor.length === 3) {
+    hexcolor = hexcolor
+        .split("")
+        .map(function (hex) {
+          return hex + hex;
+        })
+        .join("");
+  }
 
-  return pairs[0][0] as string;
+  // Convert to RGB value
+  let r = parseInt(hexcolor.substr(0, 2), 16);
+  let g = parseInt(hexcolor.substr(2, 2), 16);
+  let b = parseInt(hexcolor.substr(4, 2), 16);
+
+  // Get YIQ ratio
+  let yiq = (r * 299 + g * 587 + b * 114) / 1000;
+
+  // Check contrast
+  return yiq >= 128 ? "black" : "white";
 }
-
-// async function getBgColor(url:string):Promise<string> {
-//   const imageData = await loadImage(url);
-//   const canvas = createCanvas(imageData.width, imageData.height);
-//   const context = canvas.getContext("2d");
-//
-//   context.drawImage(imageData, 0, 0, imageData.width, imageData.height);
-//   const imagePixels = context.getImageData(0, 0, imageData.width, imageData.height);
-//   return extractBgColor(
-//       imagePixels.data,
-//       imageData.width,
-//       imageData.height
-//   );
-//
-// }
 
 
 export async function getHtml(parsedReq: ParsedRequest) {
@@ -217,7 +210,6 @@ export async function getHtml(parsedReq: ParsedRequest) {
     : images[0];
 
   // TODO
-  // style="background-color: ${images[0] ?  await getBgColor(images[0]) : "inherit"}"
   return `<!DOCTYPE html>
 <html>
     <meta charset="utf-8">
