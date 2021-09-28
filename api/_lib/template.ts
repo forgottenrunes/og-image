@@ -70,7 +70,7 @@ function getCss({
     .sides-layout {
         display: flex;
         flex-direction: row;
-        // margin: 0 4em;
+        padding: 28px;
         width: 100%;
         height: 100%;
     }
@@ -82,14 +82,11 @@ function getCss({
         align-content: center;
         justify-content: center;
         justify-items: center;
-        padding-left: 0.2em;
     }
 
     .logo {
         height: 100%;
         width: 100%;
-        // max-height: 100%;
-        // max-width: 100%;
         image-rendering: pixelated;
         object-fit: contain;
     }
@@ -122,7 +119,6 @@ function getCss({
         align-items: center;
         justify-content: center;
         padding-left: 0.25em;
-        padding-right: 0.25em;
     }`;
 }
 
