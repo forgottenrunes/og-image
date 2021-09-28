@@ -14,7 +14,7 @@
     "puppeteer-core": "7.0.0",
     "ts-node": "10.2.1",
     "twemoji": "13.0.1",
-    "vercel": "23.1.2",
+    "vercel": "21.0.1",
     "vfile-message": "3.0.2"
   },
   "devDependencies": {
