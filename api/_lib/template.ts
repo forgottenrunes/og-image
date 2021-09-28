@@ -2,7 +2,7 @@ import {readFileSync} from "fs";
 import marked from "marked";
 import {sanitizeHtml} from "./sanitizer";
 import {ParsedRequest} from "./types";
-import {createCanvas, loadImage} from "node-canvas";
+// import {createCanvas, loadImage} from "node-canvas";
 import productionWizardData = require("../data/nfts-prod.json");
 
 const twemoji = require("twemoji");
@@ -176,20 +176,20 @@ function extractBgColor(imagePixels: any, width: number, height: number) {
   return pairs[0][0] as string;
 }
 
-async function getBgColor(url:string):Promise<string> {
-  const imageData = await loadImage(url);
-  const canvas = createCanvas(imageData.width, imageData.height);
-  const context = canvas.getContext("2d");
-
-  context.drawImage(imageData, 0, 0, imageData.width, imageData.height);
-  const imagePixels = context.getImageData(0, 0, imageData.width, imageData.height);
-  return extractBgColor(
-      imagePixels.data,
-      imageData.width,
-      imageData.height
-  );
-
-}
+// async function getBgColor(url:string):Promise<string> {
+//   const imageData = await loadImage(url);
+//   const canvas = createCanvas(imageData.width, imageData.height);
+//   const context = canvas.getContext("2d");
+//
+//   context.drawImage(imageData, 0, 0, imageData.width, imageData.height);
+//   const imagePixels = context.getImageData(0, 0, imageData.width, imageData.height);
+//   return extractBgColor(
+//       imagePixels.data,
+//       imageData.width,
+//       imageData.height
+//   );
+//
+// }
 
 
 export async function getHtml(parsedReq: ParsedRequest) {
@@ -217,6 +217,7 @@ export async function getHtml(parsedReq: ParsedRequest) {
     : images[0];
 
   // TODO
+  // style="background-color: ${images[0] ?  await getBgColor(images[0]) : "inherit"}"
   return `<!DOCTYPE html>
 <html>
     <meta charset="utf-8">
@@ -227,7 +228,7 @@ export async function getHtml(parsedReq: ParsedRequest) {
     </style>
     <body>
         <div class="sides-layout">
-            <div class="logo-wrapper" style="background-color: ${images[0] ?  await getBgColor(images[0]) : "inherit"}">
+            <div class="logo-wrapper" >
                 ${getImage(image, "auto", "auto")}
             </div>
             <div class="heading">${emojify(
