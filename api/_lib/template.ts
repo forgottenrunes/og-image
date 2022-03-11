@@ -12,6 +12,9 @@ const wizData = productionWizardData as { [wizardId: string]: any };
 const rglr = readFileSync(`${__dirname}/../_fonts/alagard.woff2`).toString(
   "base64"
 );
+const dotGothic = readFileSync(`${__dirname}/../_fonts/DotGothic.woff2`).toString(
+  "base64"
+);
 
 type WizardData = { name: string; image: string; background_color: string };
 
@@ -40,6 +43,13 @@ function getCss({
         font-weight: normal;
         src: url(data:font/woff2;charset=utf-8;base64,${rglr}) format('woff2');
     }
+
+    @font-face {
+      font-family: 'MyDotGothic';
+      font-style:  normal;
+      font-weight: normal;
+      src: url(data:font/woff2;charset=utf-8;base64,${dotGothic}) format('woff2');
+  }
 
     body {
         background: ${background};
@@ -107,7 +117,7 @@ function getCss({
     
     .heading {
         flex: 50%;
-        font-family: 'MyAlagard', sans-serif;
+        font-family: 'MyAlagard', 'MyDotGothic', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
         font-style: normal;
         color: ${foreground};
