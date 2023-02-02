@@ -13,4 +13,5 @@ export interface ParsedRequest {
   wizard?: string;
   wizardImage?: string;
   bgColor?: string;
+  social?: boolean;
 }

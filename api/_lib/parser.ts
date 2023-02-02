@@ -1,6 +1,6 @@
-import {IncomingMessage} from "http";
-import {parse} from "url";
-import {ParsedRequest} from "./types";
+import { IncomingMessage } from "http";
+import { parse } from "url";
+import { ParsedRequest } from "./types";
 
 export function parseRequest(req: IncomingMessage) {
   console.log("HTTP " + req.url);
@@ -14,7 +14,8 @@ export function parseRequest(req: IncomingMessage) {
     md,
     wizard,
     wizardImage,
-    bgColor
+    bgColor,
+    social,
   } = query || {};
 
   if (Array.isArray(fontSize)) {
@@ -56,7 +57,8 @@ export function parseRequest(req: IncomingMessage) {
     widths: getArray(widths),
     heights: getArray(heights),
     wizard: wizard,
-    wizardImage: wizardImage
+    wizardImage: wizardImage,
+    social: social === "true",
   };
 
   if (!parsedRequest.images || !parsedRequest.images[0]) {

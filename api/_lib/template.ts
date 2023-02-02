@@ -1,7 +1,7 @@
-import {readFileSync} from "fs";
+import { readFileSync } from "fs";
 import marked from "marked";
-import {sanitizeHtml} from "./sanitizer";
-import {ParsedRequest} from "./types";
+import { sanitizeHtml } from "./sanitizer";
+import { ParsedRequest } from "./types";
 import productionWizardData = require("../data/nfts-prod.json");
 
 const twemoji = require("twemoji");
@@ -9,12 +9,12 @@ const twOptions = { folder: "svg", ext: ".svg" };
 const emojify = (text: string) => twemoji.parse(text, twOptions);
 const wizData = productionWizardData as { [wizardId: string]: any };
 
-const rglr = readFileSync(`${__dirname}/../_fonts/alagard.woff2`).toString(
+const rglr = readFileSync(`${__dirname}/../_fonts/Mona-Sans.woff2`).toString(
   "base64"
 );
-const dotGothic = readFileSync(`${__dirname}/../_fonts/DotGothic.woff2`).toString(
-  "base64"
-);
+const dotGothic = readFileSync(
+  `${__dirname}/../_fonts/DotGothic.woff2`
+).toString("base64");
 
 type WizardData = { name: string; image: string; background_color: string };
 
@@ -22,7 +22,7 @@ function getCss({
   theme,
   fontSize,
   wizard,
-  bgColor
+  bgColor,
 }: {
   theme: string;
   fontSize: string;
@@ -38,10 +38,11 @@ function getCss({
 
   return `
     @font-face {
-        font-family: 'MyAlagard';
-        font-style:  normal;
-        font-weight: normal;
-        src: url(data:font/woff2;charset=utf-8;base64,${rglr}) format('woff2');
+      font-family: "Mona Sans";
+      font-weight: 200 900;
+      font-stretch: 75% 125%;
+      src: url(data:font/woff2;charset=utf-8;base64,${rglr}) format('woff2 supports variations'),
+      url(data:font/woff2;charset=utf-8;base64,${rglr}) format("woff2-variations");        
     }
 
     @font-face {
@@ -117,9 +118,12 @@ function getCss({
     
     .heading {
         flex: 50%;
-        font-family: 'MyAlagard', 'MyDotGothic', sans-serif;
+        font-family: 'Mona Sans', 'MyDotGothic', sans-serif;
         font-size: ${sanitizeHtml(fontSize)};
         font-style: normal;
+        font-weight: 800;
+        letter-spacing: -2px;
+        font-stretch: 100%;
         color: ${foreground};
         line-height: 1.2;
         display: flex;
@@ -168,11 +172,11 @@ export function getContrast(hexcolor: string) {
   // If a three-character hexcode, make six-character
   if (hexcolor.length === 3) {
     hexcolor = hexcolor
-        .split("")
-        .map(function (hex) {
-          return hex + hex;
-        })
-        .join("");
+      .split("")
+      .map(function (hex) {
+        return hex + hex;
+      })
+      .join("");
   }
 
   // Convert to RGB value
@@ -187,7 +191,6 @@ export function getContrast(hexcolor: string) {
   return yiq >= 128 ? "black" : "white";
 }
 
-
 export async function getHtml(parsedReq: ParsedRequest) {
   const {
     text,
@@ -199,10 +202,13 @@ export async function getHtml(parsedReq: ParsedRequest) {
     heights,
     wizard,
     wizardImage,
-    bgColor
+    bgColor,
+    social,
   } = parsedReq;
 
   const fontSizeToUse = getFontSizeForTitleText(text, fontSize);
+
+  console.log("getting with NO wizard");
 
   if (wizard) {
     return getWizardHtml(parsedReq);
@@ -213,7 +219,9 @@ export async function getHtml(parsedReq: ParsedRequest) {
     : images[0];
 
   // TODO
-  return `<!DOCTYPE html>
+  if (social) {
+    console.log(social);
+    return `<!DOCTYPE html>
 <html>
     <meta charset="utf-8">
     <title>Generated Image</title>
@@ -233,6 +241,24 @@ export async function getHtml(parsedReq: ParsedRequest) {
         </div>
     </body>
 </html>`;
+  }
+
+  return `<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <title>Generated Image</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        ${getCss({ theme: "dark", fontSize: fontSizeToUse, bgColor })}
+    </style>
+    <body>
+        <div>
+            <div class="logo-wrapper" >
+                ${getImage(image, "auto", "auto")}
+            </div>
+        </div>
+    </body>
+</html>`;
 }
 
 export function getWizardHtml(parsedReq: ParsedRequest) {
@@ -245,7 +271,8 @@ export function getWizardHtml(parsedReq: ParsedRequest) {
     widths,
     heights,
     wizard,
-    bgColor
+    bgColor,
+    social,
   } = parsedReq;
 
   const wizardData: any = wizData[wizard.toString()];
@@ -254,7 +281,11 @@ export function getWizardHtml(parsedReq: ParsedRequest) {
 
   const fontSizeToUse = getFontSizeForTitleText(wizardText, fontSize);
 
-  return `<!DOCTYPE html>
+  console.log("get with wiz");
+
+  if (social) {
+    console.log(social);
+    return `<!DOCTYPE html>
 <html>
     <meta charset="utf-8">
     <title>Generated Image</title>
@@ -270,6 +301,24 @@ export function getWizardHtml(parsedReq: ParsedRequest) {
             <div class="heading">${emojify(
               md ? marked(wizardText) : sanitizeHtml(wizardText)
             )}
+            </div>
+        </div>
+    </body>
+</html>`;
+  }
+
+  return `<!DOCTYPE html>
+<html>
+    <meta charset="utf-8">
+    <title>Generated Image</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        ${getCss({ theme: theme, fontSize: fontSizeToUse, wizard: wizardData })}
+    </style>
+    <body>
+        <div>
+            <div class="logo-wrapper">
+                ${getImage(image, "auto", "auto")}
             </div>
         </div>
     </body>
