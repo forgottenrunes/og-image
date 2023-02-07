@@ -87,7 +87,6 @@ function getCss({
       width: 100%;
       height: 100vh;
       display: flex;
-      padding: 40px;
     }
 
     .logo-wrapper {
