@@ -91,6 +91,7 @@ Set your browser to responsive: 2048x1170
 - wizard
 - wizardImage
 - bgColor
+- social
 
 ## Example Images:
 
