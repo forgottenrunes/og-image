@@ -83,6 +83,12 @@ function getCss({
         padding: 32px;
     }
 
+    .full-image-wrapper {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+    }
+
     .logo-wrapper {
         flex: 50%;
         display: flex;
@@ -208,8 +214,6 @@ export async function getHtml(parsedReq: ParsedRequest) {
 
   const fontSizeToUse = getFontSizeForTitleText(text, fontSize);
 
-  console.log("getting with NO wizard");
-
   if (wizard) {
     return getWizardHtml(parsedReq);
   }
@@ -252,11 +256,11 @@ export async function getHtml(parsedReq: ParsedRequest) {
         ${getCss({ theme: "dark", fontSize: fontSizeToUse, bgColor })}
     </style>
     <body>
-        <div>
-            <div class="logo-wrapper" >
+        
+            <div class="full-image-wrapper" >
                 ${getImage(image, "auto", "auto")}
             </div>
-        </div>
+      
     </body>
 </html>`;
 }
@@ -316,11 +320,9 @@ export function getWizardHtml(parsedReq: ParsedRequest) {
         ${getCss({ theme: theme, fontSize: fontSizeToUse, wizard: wizardData })}
     </style>
     <body>
-        <div>
-            <div class="logo-wrapper">
-                ${getImage(image, "auto", "auto")}
-            </div>
-        </div>
+      <div class="full-image-wrapper">
+          ${getImage(image, "auto", "auto")}
+      </div>  
     </body>
 </html>`;
 }
